@@ -20,14 +20,3 @@ type TimePoint struct {
 	Negative int       `json:"negative" example:"100"`
 	Neutral  int       `json:"neutral" example:"10"`
 }
-
-func (t TimePoint) MarshalJSON() ([]byte, error) {
-	type Alias TimePoint
-	return json.Marshal(&struct {
-		Date string `json:"date"`
-		Alias
-	}{
-		Date:  t.Date.Format("2006-01"),
-		Alias: (Alias)(t),
-	})
-}

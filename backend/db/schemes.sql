@@ -11,3 +11,4 @@ CREATE TABLE ProductReviews (
     date DATE NOT NULL,
     rating rating_type NOT NULL
 );
+
