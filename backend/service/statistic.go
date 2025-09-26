@@ -1,18 +1,24 @@
 package service
 
 import (
-	"errors"
 	"prediction_service/models"
 	"time"
 )
 
-type StatisticService struct {
+type StatisticRepository interface {
+	GetStatistic(start, end time.Time) (*models.StatisticResponse, error)
 }
 
-func NewStatisticService() *StatisticService {
-	return &StatisticService{}
+type StatisticService struct {
+	sr StatisticRepository
+}
+
+func NewStatisticService(sr StatisticRepository) *StatisticService {
+	return &StatisticService{
+		sr: sr,
+	}
 }
 
 func (ss *StatisticService) GetStatistic(start, end time.Time) (*models.StatisticResponse, error) {
-	return nil, errors.New("Not implemented")
+	return ss.sr.GetStatistic(start, end)
 }
