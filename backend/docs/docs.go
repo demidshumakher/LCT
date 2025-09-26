@@ -60,7 +60,7 @@ const docTemplate = `{
         },
         "/statistics": {
             "get": {
-                "description": "Возвращает статистику за указанный период. Если параметры start или end не указаны, используются значения по умолчанию.",
+                "description": "Возвращает статистику за весь период.",
                 "consumes": [
                     "application/json"
                 ],
@@ -71,36 +71,11 @@ const docTemplate = `{
                     "statistics"
                 ],
                 "summary": "Получение статистики",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "example": "\"01.01.2024\"",
-                        "description": "Дата начала периода в формате DD.MM.YYYY",
-                        "name": "start",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "example": "\"31.05.2025\"",
-                        "description": "Дата конца периода в формате DD.MM.YYYY",
-                        "name": "end",
-                        "in": "query"
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/models.StatisticResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Некорректный формат даты",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
                         }
                     },
                     "500": {
@@ -212,7 +187,7 @@ const docTemplate = `{
             "properties": {
                 "date": {
                     "type": "string",
-                    "example": "01.01.2025"
+                    "example": "01.01.2024"
                 },
                 "negative": {
                     "type": "integer",

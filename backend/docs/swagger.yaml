@@ -64,7 +64,7 @@ definitions:
   models.TimePoint:
     properties:
       date:
-        example: 01.01.2025
+        example: 01.01.2024
         type: string
       negative:
         example: 100
@@ -116,19 +116,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Возвращает статистику за указанный период. Если параметры start
-        или end не указаны, используются значения по умолчанию.
-      parameters:
-      - description: Дата начала периода в формате DD.MM.YYYY
-        example: '"01.01.2024"'
-        in: query
-        name: start
-        type: string
-      - description: Дата конца периода в формате DD.MM.YYYY
-        example: '"31.05.2025"'
-        in: query
-        name: end
-        type: string
+      description: Возвращает статистику за весь период.
       produces:
       - application/json
       responses:
@@ -136,12 +124,6 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.StatisticResponse'
-        "400":
-          description: Некорректный формат даты
-          schema:
-            additionalProperties:
-              type: string
-            type: object
         "500":
           description: Внутренняя ошибка сервиса
           schema:

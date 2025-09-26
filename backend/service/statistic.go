@@ -2,11 +2,10 @@ package service
 
 import (
 	"prediction_service/models"
-	"time"
 )
 
 type StatisticRepository interface {
-	GetStatistic(start, end time.Time) (*models.StatisticResponse, error)
+	GetStatistic() (*models.StatisticResponse, error)
 }
 
 type StatisticService struct {
@@ -19,6 +18,6 @@ func NewStatisticService(sr StatisticRepository) *StatisticService {
 	}
 }
 
-func (ss *StatisticService) GetStatistic(start, end time.Time) (*models.StatisticResponse, error) {
-	return ss.sr.GetStatistic(start, end)
+func (ss *StatisticService) GetStatistic() (*models.StatisticResponse, error) {
+	return ss.sr.GetStatistic()
 }

@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"database/sql"
+	"fmt"
 	"prediction_service/models"
 	"time"
 )
@@ -14,22 +15,22 @@ func NewPostgresStatisticRepository(db *sql.DB) *PostgresStatisticRepository {
 	return &PostgresStatisticRepository{db: db}
 }
 
-func (r *PostgresStatisticRepository) GetStatistic(start, end time.Time) (*models.StatisticResponse, error) {
+func (r *PostgresStatisticRepository) GetStatistic() (*models.StatisticResponse, error) {
 	query := `
 	SELECT 
 		p.name,
 		r.date,
-		COALESCE(SUM(CASE WHEN r.rating = 'положительно' THEN 1 ELSE 0 END), 0) AS positive,
-		COALESCE(SUM(CASE WHEN r.rating = 'негативно' THEN 1 ELSE 0 END), 0) AS negative,
-		COALESCE(SUM(CASE WHEN r.rating = 'нейтрально' THEN 1 ELSE 0 END), 0) AS neutral
+		SUM(CASE WHEN r.rating = 'положительно' THEN 1 ELSE 0 END) AS positive,
+		SUM(CASE WHEN r.rating = 'негативно' THEN 1 ELSE 0 END) AS negative,
+		SUM(CASE WHEN r.rating = 'нейтрально' THEN 1 ELSE 0 END) AS neutral
 	FROM Products p
-	LEFT JOIN ProductReviews r
-		ON r.product_id = p.id 
-	GROUP BY p.name
+	INNER JOIN ProductReviews r
+		ON r.product_id = p.id
+	GROUP BY p.name, r.date
 	ORDER BY p.name;
 	`
 
-	rows, err := r.db.Query(query, start, end)
+	rows, err := r.db.Query(query)
 	if err != nil {
 		return nil, err
 	}
@@ -39,11 +40,18 @@ func (r *PostgresStatisticRepository) GetStatistic(start, end time.Time) (*model
 
 	for rows.Next() {
 		var name string
-		var date time.Time
 		var positive, negative, neutral int
+		var date time.Time
+		var dateSql sql.NullTime
 
-		if err := rows.Scan(&name, &date, &positive, &negative, &neutral); err != nil {
+		if err := rows.Scan(&name, &dateSql, &positive, &negative, &neutral); err != nil {
 			return nil, err
+		}
+
+		if !dateSql.Valid {
+			fmt.Println("REP: ", name)
+		} else {
+			date = dateSql.Time
 		}
 
 		productMap[name] = append(productMap[name], models.TimePoint{
