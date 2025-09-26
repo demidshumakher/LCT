@@ -1,0 +1,77 @@
+basePath: /
+definitions:
+  models.Comment:
+    properties:
+      id:
+        example: 1
+        type: integer
+      text:
+        example: Очень понравилось обслуживание в отделении, но мобильное приложение
+          часто зависает.
+        type: string
+    type: object
+  models.Prediction:
+    properties:
+      id:
+        example: 1
+        type: integer
+      sentiments:
+        items:
+          type: string
+        type: array
+      topics:
+        items:
+          type: string
+        type: array
+    type: object
+  models.PredictionRequest:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/models.Comment'
+        type: array
+    type: object
+  models.PredictionResponse:
+    properties:
+      predictions:
+        items:
+          $ref: '#/definitions/models.Prediction'
+        type: array
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: This is a sample server for predictions.
+  title: MyApp API
+  version: "1.0"
+paths:
+  /predict:
+    post:
+      consumes:
+      - application/json
+      description: Принимает список комментариев и возвращает предсказанные темы и
+        тональности для каждого
+      parameters:
+      - description: Комментарии для анализа
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.PredictionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.PredictionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Анализ комментариев
+      tags:
+      - prediction
+swagger: "2.0"
