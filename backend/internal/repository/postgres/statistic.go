@@ -16,22 +16,17 @@ func NewPostgresStatisticRepository(db *sql.DB) *PostgresStatisticRepository {
 
 func (r *PostgresStatisticRepository) GetStatistic(start, end time.Time) (*models.StatisticResponse, error) {
 	query := `
-	WITH months AS (
-		SELECT generate_series(date_trunc('month', $1::date), date_trunc('month', $2::date), interval '1 month') AS month
-	)
 	SELECT 
 		p.name,
-		m.month,
+		r.date,
 		COALESCE(SUM(CASE WHEN r.rating = 'положительно' THEN 1 ELSE 0 END), 0) AS positive,
 		COALESCE(SUM(CASE WHEN r.rating = 'негативно' THEN 1 ELSE 0 END), 0) AS negative,
 		COALESCE(SUM(CASE WHEN r.rating = 'нейтрально' THEN 1 ELSE 0 END), 0) AS neutral
 	FROM Products p
-	CROSS JOIN months m
 	LEFT JOIN ProductReviews r
 		ON r.product_id = p.id 
-		AND date_trunc('month', r.date) = m.month
-	GROUP BY p.name, m.month
-	ORDER BY p.name, m.month;
+	GROUP BY p.name
+	ORDER BY p.name;
 	`
 
 	rows, err := r.db.Query(query, start, end)
@@ -44,15 +39,15 @@ func (r *PostgresStatisticRepository) GetStatistic(start, end time.Time) (*model
 
 	for rows.Next() {
 		var name string
-		var month time.Time
+		var date time.Time
 		var positive, negative, neutral int
 
-		if err := rows.Scan(&name, &month, &positive, &negative, &neutral); err != nil {
+		if err := rows.Scan(&name, &date, &positive, &negative, &neutral); err != nil {
 			return nil, err
 		}
 
 		productMap[name] = append(productMap[name], models.TimePoint{
-			Date:     month,
+			Date:     date,
 			Positive: positive,
 			Negative: negative,
 			Neutral:  neutral,
