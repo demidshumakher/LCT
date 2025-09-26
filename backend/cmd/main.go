@@ -20,7 +20,10 @@ func main() {
 	ps := service.NewPredictionService()
 	rest.NewPredictionHandler(e, ps)
 
+	ss := service.NewStatisticService()
+	rest.NewStatisticHandler(e, ss)
+
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
 
-	e.Start(":8080")
+	e.Start("0.0.0.0:8080")
 }

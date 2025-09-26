@@ -57,6 +57,63 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/statistics": {
+            "get": {
+                "description": "Возвращает статистику за указанный период. Если параметры start или end не указаны, используются значения по умолчанию.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "statistics"
+                ],
+                "summary": "Получение статистики",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "\"01.01.2024\"",
+                        "description": "Дата начала периода в формате DD.MM.YYYY",
+                        "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "example": "\"31.05.2025\"",
+                        "description": "Дата конца периода в формате DD.MM.YYYY",
+                        "name": "end",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.StatisticResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Некорректный формат даты",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервиса",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -84,13 +141,21 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "type": "string"
-                    }
+                    },
+                    "example": [
+                        "['положительно'",
+                        " 'отрицательно']"
+                    ]
                 },
                 "topics": {
                     "type": "array",
                     "items": {
                         "type": "string"
-                    }
+                    },
+                    "example": [
+                        "['Обслуживание'",
+                        " 'Мобильное приложение']"
+                    ]
                 }
             }
         },
@@ -115,6 +180,53 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "models.Product": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "example": "ипотека"
+                },
+                "timeline": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.TimePoint"
+                    }
+                }
+            }
+        },
+        "models.StatisticResponse": {
+            "type": "object",
+            "properties": {
+                "products": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Product"
+                    }
+                }
+            }
+        },
+        "models.TimePoint": {
+            "type": "object",
+            "properties": {
+                "date": {
+                    "type": "string",
+                    "example": "01.01.2025"
+                },
+                "negative": {
+                    "type": "integer",
+                    "example": 100
+                },
+                "neutral": {
+                    "type": "integer",
+                    "example": 10
+                },
+                "positive": {
+                    "type": "integer",
+                    "example": 50
+                }
+            }
         }
     }
 }`
@@ -125,8 +237,8 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "localhost:8080",
 	BasePath:         "/",
 	Schemes:          []string{},
-	Title:            "MyApp API",
-	Description:      "This is a sample server for predictions.",
+	Title:            "API",
+	Description:      "Server for LCT hackathon",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

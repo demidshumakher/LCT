@@ -15,6 +15,6 @@ type PredictionResponse struct {
 
 type Prediction struct {
 	Id         int      `json:"id" example:"1"`
-	Topics     []string `json:"topics" example:"[\"Обслуживание\", \"Мобильное приложение\"]"`
-	Sentiments []string `json:"sentiments" example:"[\"положительно\", \"отрицательно\"]"`
+	Topics     []string `json:"topics" example:"['Обслуживание', 'Мобильное приложение']"`
+	Sentiments []string `json:"sentiments" example:"['положительно', 'отрицательно']"`
 }

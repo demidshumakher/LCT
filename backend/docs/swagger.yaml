@@ -16,10 +16,16 @@ definitions:
         example: 1
         type: integer
       sentiments:
+        example:
+        - '[''положительно'''
+        - ' ''отрицательно'']'
         items:
           type: string
         type: array
       topics:
+        example:
+        - '[''Обслуживание'''
+        - ' ''Мобильное приложение'']'
         items:
           type: string
         type: array
@@ -38,11 +44,43 @@ definitions:
           $ref: '#/definitions/models.Prediction'
         type: array
     type: object
+  models.Product:
+    properties:
+      name:
+        example: ипотека
+        type: string
+      timeline:
+        items:
+          $ref: '#/definitions/models.TimePoint'
+        type: array
+    type: object
+  models.StatisticResponse:
+    properties:
+      products:
+        items:
+          $ref: '#/definitions/models.Product'
+        type: array
+    type: object
+  models.TimePoint:
+    properties:
+      date:
+        example: 01.01.2025
+        type: string
+      negative:
+        example: 100
+        type: integer
+      neutral:
+        example: 10
+        type: integer
+      positive:
+        example: 50
+        type: integer
+    type: object
 host: localhost:8080
 info:
   contact: {}
-  description: This is a sample server for predictions.
-  title: MyApp API
+  description: Server for LCT hackathon
+  title: API
   version: "1.0"
 paths:
   /predict:
@@ -74,4 +112,43 @@ paths:
       summary: Анализ комментариев
       tags:
       - prediction
+  /statistics:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает статистику за указанный период. Если параметры start
+        или end не указаны, используются значения по умолчанию.
+      parameters:
+      - description: Дата начала периода в формате DD.MM.YYYY
+        example: '"01.01.2024"'
+        in: query
+        name: start
+        type: string
+      - description: Дата конца периода в формате DD.MM.YYYY
+        example: '"31.05.2025"'
+        in: query
+        name: end
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.StatisticResponse'
+        "400":
+          description: Некорректный формат даты
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Внутренняя ошибка сервиса
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получение статистики
+      tags:
+      - statistics
 swagger: "2.0"
