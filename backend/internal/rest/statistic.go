@@ -36,7 +36,6 @@ func NewStatisticHandler(e *echo.Echo, ss StatisticService) {
 func (sh *StatisticHandler) StatisticsHandler(c echo.Context) error {
 	resp, err := sh.ss.GetStatistic()
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 
