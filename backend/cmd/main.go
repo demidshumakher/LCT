@@ -12,6 +12,7 @@ import (
 	_ "prediction_service/docs"
 
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/swaggo/echo-swagger"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
@@ -46,6 +47,7 @@ func main() {
 	}
 
 	e := echo.New()
+	e.Use(middleware.CORS())
 
 	ss := service.NewStatisticService(postgres.NewPostgresStatisticRepository(db))
 	rest.NewStatisticHandler(e, ss)
