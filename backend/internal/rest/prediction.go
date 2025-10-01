@@ -1,23 +1,24 @@
 package rest
 
 import (
+	"fmt"
+	"io"
 	"net/http"
-	"prediction_service/models"
 
 	"github.com/labstack/echo/v4"
 )
 
-type PredictionService interface {
-	Predict(*models.PredictionRequest) (*models.PredictionResponse, error)
+type PredictionConfig struct {
+	Url string
 }
 
 type PredictionHandler struct {
-	ps PredictionService
+	cfg PredictionConfig
 }
 
-func NewPredictionHandler(e *echo.Echo, ps PredictionService) {
+func NewPredictionHandler(e *echo.Echo, cfg PredictionConfig) {
 	ph := &PredictionHandler{
-		ps: ps,
+		cfg: cfg,
 	}
 
 	e.POST("/predict", ph.PredictionHandler)
@@ -34,17 +35,21 @@ func NewPredictionHandler(e *echo.Echo, ps PredictionService) {
 // @Failure      400      {object}  map[string]string
 // @Router       /predict [post]
 func (ph *PredictionHandler) PredictionHandler(c echo.Context) error {
-	req := new(models.PredictionRequest)
-
-	if err := c.Bind(req); err != nil {
-		return err
-	}
-
-	resp, err := ph.ps.Predict(req)
-
+	req, err := http.NewRequest(http.MethodPost, ph.cfg.Url, c.Request().Body)
 	if err != nil {
 		return err
 	}
 
-	return c.JSON(http.StatusOK, resp)
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	return c.Blob(resp.StatusCode, resp.Header.Get("Content-Type"), respBody)
 }

@@ -30,6 +30,7 @@ func main() {
 	dbPassword := getEnv("DB_PASSWORD", "postgres")
 	dbName := getEnv("DB_NAME", "cryptodb")
 	sslMode := getEnv("DB_SSL_MODE", "disable")
+	modelUrl := getEnv("MODEL_URL", "")
 
 	// Формирование строки подключения
 	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
@@ -52,8 +53,10 @@ func main() {
 	ss := service.NewStatisticService(postgres.NewPostgresStatisticRepository(db))
 	rest.NewStatisticHandler(e, ss)
 
-	ps := service.NewPredictionService()
-	rest.NewPredictionHandler(e, ps)
+	predictionCfg := &rest.PredictionConfig{
+		Url: modelUrl,
+	}
+	rest.NewPredictionHandler(e, *predictionCfg)
 
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
 
