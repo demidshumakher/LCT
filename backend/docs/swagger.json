@@ -6,7 +6,7 @@
         "contact": {},
         "version": "1.0"
     },
-    "host": "http://164.90.219.207:8080",
+    "host": "164.90.219.207:8080",
     "basePath": "/",
     "paths": {
         "/predict": {
