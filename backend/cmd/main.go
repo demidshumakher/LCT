@@ -21,7 +21,7 @@ import (
 // @title           API
 // @version         1.0
 // @description     Server for LCT hackathon
-// @host            http://164.90.219.207:8080
+// @host            164.90.219.207:8080
 // @BasePath        /
 func main() {
 	dbHost := getEnv("DB_HOST", "localhost")
