@@ -41,15 +41,13 @@ services:
     restart: unless-stopped
 
   frontend:
-    image: node:20-alpine
-    working_dir: /app
-    volumes:
-      - ./sentiment-dashboard:/app
+    build:
+      context: ./sentiment-dashboard
+      dockerfile: Dockerfile
     environment:
-      - VITE_API_URL=http://localhost:8080
-    command: sh -c "npm install && npm run build && npm run preview -- --host 0.0.0.0 --port 5173"
+      - VITE_API_URL=http://server:8080
     ports:
-      - "5173:5173"
+      - "5173:80"
     depends_on:
       - server
     restart: unless-stopped
