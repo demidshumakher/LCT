@@ -70,9 +70,8 @@ def predict(req: RequestData, threshold: float = 0.3):
 
         results.append({
             "id": review.id,
-            "text": review.text,
             "topics": topics,
             "sentiments": sentiments
         })
 
-    return {"results": results}
+    return {"predictions": results}
