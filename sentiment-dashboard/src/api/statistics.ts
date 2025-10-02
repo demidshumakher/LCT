@@ -17,7 +17,7 @@ export type StatisticsResponse = {
 };
 
 const api = axios.create({
-  baseURL: (import.meta as any).env?.VITE_API_URL || 'http://164.90.219.207:8080',
+  baseURL: (import.meta as any).env?.VITE_API_URL || 'http://hackathon.gberdyshev.org:8080',
 });
 
 export async function fetchStatistics(): Promise<StatisticsResponse> {
