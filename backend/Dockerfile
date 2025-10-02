@@ -17,6 +17,4 @@ WORKDIR /root/
 COPY --from=builder /server .
 COPY db/schemes.sql /db/schemes.sql
 
-EXPOSE 8080
-
 CMD ["./server"]
